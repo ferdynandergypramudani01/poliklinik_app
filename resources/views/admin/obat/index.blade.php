@@ -6,6 +6,8 @@
             Data Obat
         </h2>
 
+        @include('components.partials.alert')
+
         <a href="{{ route('obat.create') }}"
             class="inline-flex items-center gap-2 px-5 py-2.5 
                   bg-primary hover:bg-primary/90 
