@@ -34,10 +34,15 @@ class ObatController extends Controller
             'harga' => $request->harga,
         ]);
 
-        return redirect()
-            ->route('obat.index')
-            ->with('message', 'Data Obat Berhasil dibuat')
-            ->with('type', 'success');
+        // return redirect()
+        //     ->route('obat.index')
+        //     ->with('message', 'Data Obat Berhasil dibuat')
+        //     ->with('type', 'success');
+
+        return redirect()->route('obat.index')
+            ->with('message', 'Data obat berhasil ditambahkan.')
+            ->with('type', 'success')
+            ->with('action', 'create');
     }
 
     public function edit(string $id)
@@ -64,10 +69,15 @@ class ObatController extends Controller
             'harga' => $request->harga,
         ]);
 
-        return redirect()
-            ->route('obat.index')
-            ->with('message', 'Data Obat berhasil di edit')
-            ->with('type', 'success');
+        // return redirect()
+        //     ->route('obat.index')
+        //     ->with('message', 'Data Obat berhasil di edit')
+        //     ->with('type', 'success');
+
+        return redirect()->route('obat.index')
+            ->with('message', 'Data obat berhasil diperbarui.')
+            ->with('type', 'warning')
+            ->with('action', 'edit');
     }
 
     public function destroy(string $id)
@@ -75,9 +85,14 @@ class ObatController extends Controller
         $obat = Obat::findOrFail($id);
         $obat->delete();
 
-        return redirect()
-            ->route('obat.index')
-            ->with('message', 'Data Obat berhasil di Hapus')
-            ->with('type', 'success');
+        // return redirect()
+        //     ->route('obat.index')
+        //     ->with('message', 'Data Obat berhasil di Hapus')
+        //     ->with('type', 'success');
+
+        return redirect()->route('obat.index')
+            ->with('message', 'Data obat berhasil dihapus.')
+            ->with('type', 'error')
+            ->with('action', 'destroy');
     }
 }
