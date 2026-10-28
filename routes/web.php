@@ -78,3 +78,14 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () 
 
     Route::resource('jadwal-periksa', JadwalPeriksaController::class);
 });
+
+Route::middleware(['auth', 'role:pasien'])->prefix('pasien')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('pasien.dashboard');
+    })->name('pasien.dashboard');
+
+    Route::get('/daftar', [PoliController::class, 'get'])->name('pasien.daftar');
+
+    Route::post('/daftar', [PoliController::class, 'submit'])
+        ->name('pasien.daftar.submit');
+});
