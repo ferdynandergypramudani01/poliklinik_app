@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\ObatController;
 use App\Http\Controllers\Admin\PasienController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dokter\JadwalPeriksaController;
+use App\Http\Controllers\Dokter\PeriksaPasienController;
+use App\Http\Controllers\Pasien\PoliController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -88,4 +90,21 @@ Route::middleware(['auth', 'role:pasien'])->prefix('pasien')->group(function () 
 
     Route::post('/daftar', [PoliController::class, 'submit'])
         ->name('pasien.daftar.submit');
+});
+
+Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dokter.dashboard');
+    })->name('dokter.dashboard');
+
+    Route::resource('jadwal-periksa', JadwalPeriksaController::class);
+
+    Route::get('/periksa-pasien', [PeriksaPasienController::class, 'index'])
+        ->name('periksa-pasien.index');
+
+    Route::post('/periksa-pasien', [PeriksaPasienController::class, 'store'])
+        ->name('periksa-pasien.store');
+
+    Route::get('/periksa-pasien/{id}', [PeriksaPasienController::class, 'create'])
+        ->name('periksa-pasien.create');
 });
