@@ -9,6 +9,8 @@ use App\Http\Controllers\Dokter\JadwalPeriksaController;
 use App\Http\Controllers\Dokter\PeriksaPasienController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Pasien\PoliController;
+use App\Http\Controllers\ProfileController;
+// ganti password
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -123,4 +125,16 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () 
 
     Route::get('/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('riwayat-pasien.index');
     Route::get('/riwayat-pasien/{id}', [RiwayatPasienController::class, 'show'])->name('riwayat-pasien.show');
+});
+
+// ganti password
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::put('/profile/password', [
+        ProfileController::class,
+        'updatePassword',
+    ])->name('profile.password.update');
 });
