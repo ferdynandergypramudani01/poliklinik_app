@@ -35,7 +35,7 @@ class DokterController extends Controller
         ]);
 
         User::create([
-            'name' => $request->nama,
+            'nama' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
@@ -69,7 +69,7 @@ class DokterController extends Controller
         ]);
 
         $updateData = [
-            'name' => $request->nama,
+            'nama' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
