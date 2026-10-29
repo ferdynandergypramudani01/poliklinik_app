@@ -11,8 +11,10 @@ use App\Http\Controllers\Dokter\PeriksaPasienController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Pasien\PembayaranController;
 use App\Http\Controllers\Pasien\PoliController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Pasien\RiwayatPendaftaranController;
 // ganti password
+use App\Http\Controllers\ProfileController;
+// riwayat pendaftaran
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -179,4 +181,22 @@ Route::middleware(['auth', 'role:admin'])
             VerifikasiPembayaranController::class,
             'tolak',
         ])->name('admin.pembayaran.tolak');
+    });
+
+// riwayat pendaftaran pasien
+Route::middleware(['auth', 'role:pasien'])
+    ->prefix('pasien')
+    ->name('pasien.')
+    ->group(function () {
+
+        Route::get('/riwayat-pendaftaran', [
+            RiwayatPendaftaranController::class,
+            'index',
+        ])->name('riwayat-pendaftaran.index');
+
+        Route::get('/riwayat-pendaftaran/{daftarPoli}', [
+            RiwayatPendaftaranController::class,
+            'show',
+        ])->name('riwayat-pendaftaran.show');
+
     });

@@ -25,8 +25,15 @@ class DaftarPoli extends Model
         return $this->belongsTo(JadwalPeriksa::class, 'id_jadwal');
     }
 
+    // Relasi lama, tetap dipertahankan untuk kompatibilitas.
     public function periksas()
     {
         return $this->hasMany(Periksa::class, 'id_daftar_poli');
+    }
+
+    // Relasi untuk mengambil satu hasil pemeriksaan.
+    public function periksa()
+    {
+        return $this->hasOne(Periksa::class, 'id_daftar_poli');
     }
 }

@@ -90,35 +90,48 @@
         @endif
 
 
+
         {{-- ================= PASIEN ================= --}}
         @if (auth()->user()->role === 'pasien')
-            <p class="text-xs uppercase tracking-widest text-indigo-400 px-3 mb-3 mt-6">
-                Menu Pasien
-            </p>
+            <div class="mt-6">
+                <p class="px-3 mb-3 text-xs font-semibold uppercase tracking-widest text-indigo-400">
+                    Menu Pasien
+                </p>
 
-            <div class="space-y-1">
+                <div class="space-y-1">
 
-                <a href="{{ route('pasien.dashboard') }}"
-                    class="{{ $baseLink }} {{ request()->routeIs('pasien.dashboard') ? $active : $inactive }}">
-                    <i class="fas fa-house-medical w-4 text-center"></i>
-                    Dashboard Pasien
-                </a>
+                    {{-- Dashboard Pasien --}}
+                    <a href="{{ route('pasien.dashboard') }}"
+                        class="{{ $baseLink }} {{ request()->routeIs('pasien.dashboard') ? $active : $inactive }}">
+                        <i class="fas fa-house-medical w-5 text-center"></i>
+                        <span>Dashboard Pasien</span>
+                    </a>
 
-                <a href="{{ route('pasien.daftar') }}"
-                    class="{{ ($baseLink ?? '') . (request()->routeIs('pasien.daftar') ? $active : $inactive) }}">
-                    <i class="fas fa-house-medical w-4 text-center"></i>
-                    Pendaftaran Periksa
-                </a>
+                    {{-- Pendaftaran Periksa --}}
+                    <a href="{{ route('pasien.daftar') }}"
+                        class="{{ $baseLink }} {{ request()->routeIs('pasien.daftar') ? $active : $inactive }}">
+                        <i class="fas fa-calendar-plus w-5 text-center"></i>
+                        <span>Pendaftaran Periksa</span>
+                    </a>
 
+                    {{-- Pembayaran --}}
+                    <a href="{{ route('pasien.pembayaran.index') }}"
+                        class="{{ $baseLink }} {{ request()->routeIs('pasien.pembayaran.*') ? $active : $inactive }}">
+                        <i class="fas fa-wallet w-5 text-center"></i>
+                        <span>Pembayaran</span>
+                    </a>
 
-                <a href="{{ route('pasien.pembayaran.index') }}"
-                    class="{{ $baseLink }} {{ request()->routeIs('pasien.pembayaran.*') ? $active : $inactive }}">
-                    <i class="fas fa-wallet w-4 text-center"></i>
-                    Pembayaran
-                </a>
+                    {{-- Riwayat Pendaftaran --}}
+                    <a href="{{ route('pasien.riwayat-pendaftaran.index') }}"
+                        class="{{ $baseLink }} {{ request()->routeIs('pasien.riwayat-pendaftaran.*') ? $active : $inactive }}">
+                        <i class="fas fa-clock-rotate-left w-5 text-center"></i>
+                        <span>Riwayat Pendaftaran</span>
+                    </a>
 
+                </div>
             </div>
         @endif
+
 
 
         {{-- ================= DOKTER ================= --}}
