@@ -13,14 +13,12 @@ class DokterController extends Controller
     public function index()
     {
         $dokters = User::where('role', 'dokter')->with('poli')->get();
-
         return view('admin.dokter.index', compact('dokters'));
     }
 
     public function create()
     {
         $polis = Poli::all();
-
         return view('admin.dokter.create', compact('polis'));
     }
 
@@ -37,7 +35,7 @@ class DokterController extends Controller
         ]);
 
         User::create([
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
@@ -55,7 +53,6 @@ class DokterController extends Controller
     public function edit(User $dokter)
     {
         $polis = Poli::all();
-
         return view('admin.dokter.edit', compact('dokter', 'polis'));
     }
 
@@ -64,15 +61,15 @@ class DokterController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string',
-            'no_ktp' => 'required|string|max:16|unique:users,no_ktp,'.$dokter->id,
+            'no_ktp' => 'required|string|max:16|unique:users,no_ktp,' . $dokter->id,
             'no_hp' => 'required|string|max:15',
             'id_poli' => 'required|string|exists:poli,id',
-            'email' => 'required|string|unique:users,email,'.$dokter->id,
+            'email' => 'required|string|unique:users,email,' . $dokter->id,
             'password' => 'nullable|string|min:6',
         ]);
 
         $updateData = [
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
