@@ -7,8 +7,11 @@ use App\Models\DaftarPoli;
 use App\Models\DetailPeriksa;
 use App\Models\Obat;
 use App\Models\Periksa;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PeriksaPasienController extends Controller
 {
@@ -16,7 +19,11 @@ class PeriksaPasienController extends Controller
     {
         $dokterId = Auth::id();
 
-        $daftarPasien = DaftarPoli::with(['pasien', 'jadwalPeriksa', 'periksas'])
+        $daftarPasien = DaftarPoli::with([
+            'pasien',
+            'jadwalPeriksa',
+            'periksas',
+        ])
             ->whereHas('jadwalPeriksa', function ($query) use ($dokterId) {
                 $query->where('id_dokter', $dokterId);
             })
@@ -35,32 +42,102 @@ class PeriksaPasienController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'obat_json' => 'required',
-            'catatan' => 'nullable|string',
-            'biaya_periksa' => 'required|integer',
+        $validated = $request->validate([
+            'id_daftar_poli' => [
+                'required',
+                'integer',
+                'exists:daftar_poli,id',
+            ],
+            'obat_json' => [
+                'required',
+                'json',
+            ],
+            'catatan' => [
+                'nullable',
+                'string',
+            ],
         ]);
 
-        $obatIds = json_decode($request->obat_json, true);
+        $obatIds = json_decode($validated['obat_json'], true);
 
-        $periksa = Periksa::create([
-            'id_daftar_poli' => $request->id_daftar_poli,
-            'tgl_periksa' => now(),
-            'catatan' => $request->catatan,
-            'biaya_periksa' => $request->biaya_periksa + 150000,
-        ]);
+        if (
+            !is_array($obatIds) ||
+            empty($obatIds) ||
+            count($obatIds) !== count(array_unique($obatIds))
+        ) {
+            throw ValidationException::withMessages([
+                'obat_json' => 'Pilih minimal satu obat yang valid dan tidak duplikat.',
+            ]);
+        }
 
-        if (is_array($obatIds)) {
-            foreach ($obatIds as $idObat) {
-                DetailPeriksa::create([
-                    'id_periksa' => $periksa->id,
-                    'id_obat' => $idObat,
+        foreach ($obatIds as $obatId) {
+            if (!is_int($obatId) && !(is_string($obatId) && ctype_digit($obatId))) {
+                throw ValidationException::withMessages([
+                    'obat_json' => 'Data obat tidak valid.',
                 ]);
             }
         }
 
+        $obatIds = array_map('intval', $obatIds);
+
+        // Pastikan pendaftaran milik dokter yang sedang login.
+        $daftarPoli = DaftarPoli::whereKey($validated['id_daftar_poli'])
+            ->whereHas('jadwalPeriksa', function ($query) {
+                $query->where('id_dokter', Auth::id());
+            })
+            ->firstOrFail();
+
+        // Cegah satu pendaftaran diperiksa dua kali.
+        if ($daftarPoli->periksas()->exists()) {
+            throw ValidationException::withMessages([
+                'id_daftar_poli' => 'Pasien ini sudah memiliki hasil pemeriksaan.',
+            ]);
+        }
+
+        // Ambil harga obat langsung dari database.
+        $obats = Obat::whereIn('id', $obatIds)->get();
+
+        if ($obats->count() !== count($obatIds)) {
+            throw ValidationException::withMessages([
+                'obat_json' => 'Satu atau lebih obat tidak ditemukan.',
+            ]);
+        }
+
+        $totalHargaObat = $obats->sum('harga');
+        $biayaPemeriksaan = 150000;
+        $totalBiaya = $totalHargaObat + $biayaPemeriksaan;
+
+        DB::transaction(function () use (
+            $daftarPoli,
+            $validated,
+            $obats,
+            $totalBiaya
+        ) {
+            // Simpan hasil pemeriksaan.
+            $periksa = Periksa::create([
+                'id_daftar_poli' => $daftarPoli->id,
+                'tgl_periksa' => now(),
+                'catatan' => $validated['catatan'] ?? null,
+                'biaya_periksa' => $totalBiaya,
+            ]);
+
+            // Simpan obat yang diresepkan.
+            foreach ($obats as $obat) {
+                DetailPeriksa::create([
+                    'id_periksa' => $periksa->id,
+                    'id_obat' => $obat->id,
+                ]);
+            }
+
+            // Buat tagihan secara otomatis.
+            Pembayaran::create([
+                'id_periksa' => $periksa->id,
+                'status' => 'menunggu_pembayaran',
+            ]);
+        });
+
         return redirect()
             ->route('periksa-pasien.index')
-            ->with('success', 'Data periksa berhasil disimpan.');
+            ->with('success', 'Pemeriksaan berhasil disimpan dan tagihan pembayaran telah dibuat.');
     }
 }
