@@ -4,10 +4,12 @@ use App\Http\Controllers\Admin\AdminPoliController;
 use App\Http\Controllers\Admin\DokterController;
 use App\Http\Controllers\Admin\ObatController;
 use App\Http\Controllers\Admin\PasienController;
+use App\Http\Controllers\Admin\VerifikasiPembayaranController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dokter\JadwalPeriksaController;
 use App\Http\Controllers\Dokter\PeriksaPasienController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
+use App\Http\Controllers\Pasien\PembayaranController;
 use App\Http\Controllers\Pasien\PoliController;
 use App\Http\Controllers\ProfileController;
 // ganti password
@@ -138,3 +140,43 @@ Route::middleware('auth')->group(function () {
         'updatePassword',
     ])->name('profile.password.update');
 });
+
+// pembayaran pasien
+Route::middleware(['auth', 'role:pasien'])
+    ->prefix('pasien')
+    ->group(function () {
+        Route::get('/pembayaran', [
+            PembayaranController::class,
+            'index',
+        ])->name('pasien.pembayaran.index');
+
+        Route::post('/pembayaran/{id}/upload', [
+            PembayaranController::class,
+            'upload',
+        ])->name('pasien.pembayaran.upload');
+    });
+
+// verifikasi pembayaran
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('/pembayaran', [
+            VerifikasiPembayaranController::class,
+            'index',
+        ])->name('admin.pembayaran.index');
+
+        Route::get('/pembayaran/{id}', [
+            VerifikasiPembayaranController::class,
+            'show',
+        ])->name('admin.pembayaran.show');
+
+        Route::patch('/pembayaran/{id}/konfirmasi', [
+            VerifikasiPembayaranController::class,
+            'konfirmasi',
+        ])->name('admin.pembayaran.konfirmasi');
+
+        Route::patch('/pembayaran/{id}/tolak', [
+            VerifikasiPembayaranController::class,
+            'tolak',
+        ])->name('admin.pembayaran.tolak');
+    });

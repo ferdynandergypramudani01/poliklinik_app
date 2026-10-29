@@ -79,6 +79,13 @@
                     <i class="fas fa-bed-pulse w-4 text-center"></i>
                     Manajemen Pasien
                 </a>
+
+                <a href="{{ route('admin.pembayaran.index') }}"
+                    class="{{ $baseLink }} {{ request()->routeIs('admin.pembayaran.*') ? $active : $inactive }}">
+                    <i class="fas fa-money-check-dollar w-4 text-center"></i>
+                    Verifikasi Pembayaran
+                </a>
+
             </div>
         @endif
 
@@ -102,6 +109,14 @@
                     <i class="fas fa-house-medical w-4 text-center"></i>
                     Pendaftaran Periksa
                 </a>
+
+
+                <a href="{{ route('pasien.pembayaran.index') }}"
+                    class="{{ $baseLink }} {{ request()->routeIs('pasien.pembayaran.*') ? $active : $inactive }}">
+                    <i class="fas fa-wallet w-4 text-center"></i>
+                    Pembayaran
+                </a>
+
             </div>
         @endif
 
