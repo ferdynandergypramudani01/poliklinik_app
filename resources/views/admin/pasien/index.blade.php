@@ -41,7 +41,7 @@
                             <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
 
                                 <td class="px-6 py-4 font-semibold text-slate-800">
-                                    {{ $pasien->nama }}
+                                    {{ $pasien->name }}
                                 </td>
 
                                 <td class="px-6 py-4 text-slate-600">

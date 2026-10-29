@@ -33,7 +33,7 @@ class PasienController extends Controller
         ]);
 
         User::create([
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
@@ -62,7 +62,7 @@ class PasienController extends Controller
         ]);
 
         $updateData = [
-            'nama' => $request->nama,
+            'name' => $request->nama,
             'alamat' => $request->alamat,
             'no_ktp' => $request->no_ktp,
             'no_hp' => $request->no_hp,
