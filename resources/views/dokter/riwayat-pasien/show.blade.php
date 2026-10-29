@@ -48,7 +48,7 @@
                         <span class="w-36 text-slate-500 font-medium">Tanggal Periksa</span>
                         <span
                             class="text-slate-800">{{ \Carbon\Carbon::parse($periksa->tgl_periksa)->format('d/m/Y
-                                                        H:i') }}</span>
+                                                                                                                H:i') }}</span>
                     </div>
                 </div>
             </div>
