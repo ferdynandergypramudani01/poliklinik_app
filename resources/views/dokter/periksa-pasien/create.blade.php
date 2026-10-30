@@ -16,6 +16,19 @@
     {{-- Card --}}
     <div class="card bg-base-100 shadow-sm rounded-2xl border border-slate-200">
         <div class="card-body p-8">
+            {{-- Pesan Error --}}
+            @if ($errors->any())
+                <div class="alert alert-error mb-5">
+                    <div>
+                        <strong>Pemeriksaan gagal disimpan!</strong>
+                        <ul class="list-disc ml-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
 
             <form action="{{ route('periksa-pasien.store') }}" method="POST">
                 @csrf

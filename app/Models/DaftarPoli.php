@@ -13,25 +13,36 @@ class DaftarPoli extends Model
         'id_jadwal',
         'keluhan',
         'no_antrian',
+        'status_antrian',
+        'waktu_dipanggil',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'waktu_dipanggil' => 'datetime',
+        ];
+    }
+
+    // Relasi ke pasien
     public function pasien()
     {
         return $this->belongsTo(User::class, 'id_pasien');
     }
 
+    // Relasi ke jadwal pemeriksaan
     public function jadwalPeriksa()
     {
         return $this->belongsTo(JadwalPeriksa::class, 'id_jadwal');
     }
 
-    // Relasi lama, tetap dipertahankan untuk kompatibilitas.
+    // Relasi ke banyak pemeriksaan
     public function periksas()
     {
         return $this->hasMany(Periksa::class, 'id_daftar_poli');
     }
 
-    // Relasi untuk mengambil satu hasil pemeriksaan.
+    // Relasi ke satu pemeriksaan
     public function periksa()
     {
         return $this->hasOne(Periksa::class, 'id_daftar_poli');
