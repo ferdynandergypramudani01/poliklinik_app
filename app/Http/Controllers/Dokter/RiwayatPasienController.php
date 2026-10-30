@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Dokter;
 
+use App\Exports\RiwayatPasienExport;
 use App\Http\Controllers\Controller;
 use App\Models\Periksa;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RiwayatPasienController extends Controller
 {
@@ -32,5 +34,13 @@ class RiwayatPasienController extends Controller
         ])->findOrFail($id);
 
         return view('dokter.riwayat-pasien.show', compact('periksa'));
+    }
+
+    public function export()
+    {
+        return Excel::download(
+            new RiwayatPasienExport,
+            'riwayat-pasien.xlsx'
+        );
     }
 }

@@ -57,7 +57,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+
     Route::resource('polis', AdminPoliController::class);
+
+    // Export Data Dokter (letakkan sebelum Route::resource)
+    Route::get('/dokter/export', [DokterController::class, 'export'])
+        ->name('dokter.export');
+
+    // CRUD Dokter
     Route::resource('dokter', DokterController::class);
 });
 
@@ -65,8 +72,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+
     Route::resource('polis', AdminPoliController::class);
     Route::resource('dokter', DokterController::class);
+
+    // Export Data Pasien
+    Route::get('/pasien/export', [PasienController::class, 'export'])
+        ->name('pasien.export');
+
     Route::resource('pasien', PasienController::class);
 });
 
@@ -78,6 +91,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('polis', AdminPoliController::class);
     Route::resource('dokter', DokterController::class);
     Route::resource('pasien', PasienController::class);
+
+    // Export Data Obat
+    Route::get('/obat/export', [ObatController::class, 'export'])
+        ->name('obat.export');
+
+    // CRUD Obat
     Route::resource('obat', ObatController::class);
 });
 
@@ -86,6 +105,13 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () 
         return view('dokter.dashboard');
     })->name('dokter.dashboard');
 
+    // Export Jadwal Periksa
+    Route::get('/jadwal-periksa/export', [
+        JadwalPeriksaController::class,
+        'export',
+    ])->name('jadwal-periksa.export');
+
+    // CRUD Jadwal Periksa
     Route::resource('jadwal-periksa', JadwalPeriksaController::class);
 });
 
@@ -128,8 +154,23 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->group(function () 
     Route::post('/periksa-pasien', [PeriksaPasienController::class, 'store'])->name('periksa-pasien.store');
     Route::get('/periksa-pasien/{id}', [PeriksaPasienController::class, 'create'])->name('periksa-pasien.create');
 
-    Route::get('/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('riwayat-pasien.index');
-    Route::get('/riwayat-pasien/{id}', [RiwayatPasienController::class, 'show'])->name('riwayat-pasien.show');
+    // Riwayat Pasien
+    Route::get('/riwayat-pasien', [
+        RiwayatPasienController::class,
+        'index',
+    ])->name('riwayat-pasien.index');
+
+    // Export Riwayat Pasien
+    Route::get('/riwayat-pasien/export', [
+        RiwayatPasienController::class,
+        'export',
+    ])->name('riwayat-pasien.export');
+
+    // Detail Riwayat Pasien
+    Route::get('/riwayat-pasien/{id}', [
+        RiwayatPasienController::class,
+        'show',
+    ])->name('riwayat-pasien.show');
 });
 
 // ganti password
