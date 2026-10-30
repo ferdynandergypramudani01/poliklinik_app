@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ObatExport;
 use App\Http\Controllers\Controller;
 use App\Models\Obat;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ObatController extends Controller
 {
@@ -78,6 +80,14 @@ class ObatController extends Controller
             ->with('message', 'Data obat berhasil diperbarui.')
             ->with('type', 'warning')
             ->with('action', 'edit');
+    }
+
+    public function export()
+    {
+        return Excel::download(
+            new ObatExport,
+            'data-obat.xlsx'
+        );
     }
 
     public function destroy(string $id)

@@ -6,17 +6,30 @@
             Data Obat
         </h2>
 
-        @include('components.partials.alert')
+        <div class="flex items-center gap-3">
+            {{-- Export Excel --}}
+            <a href="{{ route('obat.export') }}"
+                class="inline-flex items-center gap-2 px-5 py-2.5
+                   bg-green-600 hover:bg-green-700
+                   text-white text-sm font-semibold
+                   rounded-xl transition">
+                <i class="fas fa-file-excel text-sm"></i>
+                Export Excel
+            </a>
 
-        <a href="{{ route('obat.create') }}"
-            class="inline-flex items-center gap-2 px-5 py-2.5 
-                  bg-primary hover:bg-primary/90 
-                  text-white text-sm font-semibold 
-                  rounded-xl transition">
-            <i class="fas fa-plus text-xs"></i>
-            Tambah Obat
-        </a>
+            {{-- Tambah Obat --}}
+            <a href="{{ route('obat.create') }}"
+                class="inline-flex items-center gap-2 px-5 py-2.5
+                   bg-primary hover:bg-primary/90
+                   text-white text-sm font-semibold
+                   rounded-xl transition">
+                <i class="fas fa-plus text-xs"></i>
+                Tambah Obat
+            </a>
+        </div>
     </div>
+
+    @include('components.partials.alert')
 
     {{-- Card --}}
     <div class="card bg-base-100 shadow-md rounded-2 border">
