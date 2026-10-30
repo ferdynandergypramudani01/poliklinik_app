@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
+use App\Notifications\PaymentVerifiedNotification;
+
 class VerifikasiPembayaranController extends Controller
 {
     /**
@@ -54,17 +56,31 @@ class VerifikasiPembayaranController extends Controller
 
             if ($pembayaran->status !== 'menunggu_verifikasi') {
                 throw ValidationException::withMessages([
-                    'pembayaran' =>
-                        'Pembayaran ini tidak sedang menunggu verifikasi.',
+                    'pembayaran' => 'Pembayaran ini tidak sedang menunggu verifikasi.',
                 ]);
             }
 
+            // Ambil data pasien pemilik pembayaran.
+            $pembayaran->load(
+                'periksa.daftarPoli.pasien'
+            );
+
+            $pasien = $pembayaran->periksa
+                ->daftarPoli
+                ->pasien;
+
+            // Perbarui status pembayaran.
             $pembayaran->update([
                 'status' => 'lunas',
                 'verified_by' => Auth::id(),
                 'verified_at' => now(),
                 'catatan_admin' => null,
             ]);
+
+            // Kirim notifikasi kepada pasien.
+            $pasien->notify(
+                new PaymentVerifiedNotification($pembayaran->id)
+            );
         });
 
         return redirect()
@@ -84,10 +100,8 @@ class VerifikasiPembayaranController extends Controller
                 'max:1000',
             ],
         ], [
-            'catatan_admin.required' =>
-                'Alasan penolakan wajib diisi.',
-            'catatan_admin.max' =>
-                'Alasan penolakan maksimal 1000 karakter.',
+            'catatan_admin.required' => 'Alasan penolakan wajib diisi.',
+            'catatan_admin.max' => 'Alasan penolakan maksimal 1000 karakter.',
         ]);
 
         DB::transaction(function () use ($id, $validated) {
@@ -97,8 +111,7 @@ class VerifikasiPembayaranController extends Controller
 
             if ($pembayaran->status !== 'menunggu_verifikasi') {
                 throw ValidationException::withMessages([
-                    'pembayaran' =>
-                        'Pembayaran ini tidak sedang menunggu verifikasi.',
+                    'pembayaran' => 'Pembayaran ini tidak sedang menunggu verifikasi.',
                 ]);
             }
 

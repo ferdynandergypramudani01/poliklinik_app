@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pasien;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
+use App\Notifications\PaymentUploadedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -82,13 +83,12 @@ class PembayaranController extends Controller
 
                 abort_unless($milikPasien, 404);
 
-                if (!in_array($pembayaran->status, [
+                if (! in_array($pembayaran->status, [
                     'menunggu_pembayaran',
                     'ditolak',
                 ], true)) {
                     throw ValidationException::withMessages([
-                        'bukti_pembayaran' =>
-                            'Tagihan ini tidak dapat menerima bukti pembayaran saat ini.',
+                        'bukti_pembayaran' => 'Tagihan ini tidak dapat menerima bukti pembayaran saat ini.',
                     ]);
                 }
 
@@ -101,6 +101,21 @@ class PembayaranController extends Controller
                     'verified_by' => null,
                     'verified_at' => null,
                 ]);
+
+                // Ambil dokter yang menangani pemeriksaan.
+                $pembayaran->load(
+                    'periksa.daftarPoli.jadwalPeriksa.dokter'
+                );
+
+                $dokter = $pembayaran->periksa
+                    ->daftarPoli
+                    ->jadwalPeriksa
+                    ->dokter;
+
+                // Kirim notifikasi kepada dokter.
+                $dokter->notify(
+                    new PaymentUploadedNotification($pembayaran->id)
+                );
             });
         } catch (\Throwable $e) {
             Storage::disk('public')->delete($pathBaru);

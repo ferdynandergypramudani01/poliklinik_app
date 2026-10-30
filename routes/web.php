@@ -9,12 +9,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dokter\JadwalPeriksaController;
 use App\Http\Controllers\Dokter\PeriksaPasienController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Pasien\PembayaranController;
 use App\Http\Controllers\Pasien\PoliController;
-use App\Http\Controllers\Pasien\RiwayatPendaftaranController;
 // ganti password
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Pasien\RiwayatPendaftaranController;
 // riwayat pendaftaran
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -200,3 +201,14 @@ Route::middleware(['auth', 'role:pasien'])
         ])->name('riwayat-pendaftaran.show');
 
     });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.readAll');
+});
